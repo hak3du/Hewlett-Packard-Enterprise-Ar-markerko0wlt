@@ -74,14 +74,13 @@
             id="markerA"
         >
             <a-entity
-                geometry="primitive: plane; width: 16; height: 9"
+                geometry="primitive: plane; width: 1.6; height: 0.9" <!-- Adjust size for the marker -->
                 material="shader: flat; src: #iframe"
                 scale="1 1 1"
-                position="0 0.1 0"
+                position="0 0.1 0" <!-- Position directly above the marker -->
                 rotation="-90 0 0"
                 class="clickable"
                 gesture-handler
-                position="0 0.1 -0.5" <!-- Adjust position to follow the camera slightly -->
             ></a-entity>
         </a-marker>
 
