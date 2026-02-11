@@ -1,76 +1,79 @@
 <!doctype html>
 <html>
-  <head>
-    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <script>
-      // Component to show/hide iframe based on marker
-      AFRAME.registerComponent('marker-iframe', {
-        init: function () {
-          const marker = this.el;
-          const iframe = document.querySelector('#ytframe');
+    <head>
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+        <script>
+            AFRAME.registerComponent('videohandler', {
+                init: function () {
+                    var marker = this.el;
+                    this.vid = document.querySelector("#vid");
 
-          marker.addEventListener('markerFound', () => {
-            iframe.style.display = 'block'; // Show iframe
-          });
+                    marker.addEventListener('markerFound', function () {
+                        this.toggle = true;
+                        this.vid.play();
+                    }.bind(this));
 
-          marker.addEventListener('markerLost', () => {
-            iframe.style.display = 'none'; // Hide iframe
-          });
-        }
-      });
-    </script>
-    <style>
-      /* Style iframe to match video size and keep non-fullscreen */
-      #ytframe {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 480px;  /* adjust to match your AR asset */
-        height: 270px; /* 16:9 aspect ratio */
-        display: none; /* hidden by default */
-        pointer-events: none; /* AR interactions not blocked */
-        border: none;
-      }
-    </style>
-  </head>
+                    marker.addEventListener('markerLost', function () {
+                        this.toggle = false;
+                        this.vid.pause();
+                    }.bind(this));
+                },
+            });
+        </script>
+    </head>
 
-  <body style="margin: 0; overflow: hidden;">
-    <a-scene
-      vr-mode-ui="enabled: false"
-      loading-screen="enabled: false;"
-      arjs="sourceType: webcam; debugUIEnabled: false;"
-      embedded
-    >
-      <a-marker
-        type="pattern"
-        preset="custom"
-        url="marker.patt"
-        marker-iframe
-        smooth="true"
-        smoothCount="10"
-        smoothTolerance="0.01"
-        smoothThreshold="5"
-      >
-        <!-- Placeholder plane to match AR position -->
-        <a-plane
-          position="0 0.1 0"
-          rotation="-90 0 0"
-          width="1"
-          height="0.5625"
-        ></a-plane>
-      </a-marker>
+    <body style="margin: 0; overflow: hidden;">
+        <a-scene
+            vr-mode-ui="enabled: false"
+            loading-screen="enabled: false;"
+            arjs='sourceType: webcam; debugUIEnabled: false;'
+            id="scene"
+            embedded
+            gesture-detector
+        >
+            <a-assets>
+                <video
+                    id="vid"
+                    src="asset.mp4"
+                    preload="auto"
+                    response-type="arraybuffer"
+                    loop
+                    crossorigin
+                    webkit-playsinline
+                    autoplay
+                    muted
+                    playsinline
+                ></video>
+            </a-assets>
 
-      <a-entity camera></a-entity>
-    </a-scene>
+            <a-marker
+                type="pattern"
+                preset="custom"
+                url="marker.patt"
+                videohandler
+                smooth="true"
+                smoothCount="10"
+                smoothTolerance="0.01"
+                smoothThreshold="5"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+                id="markerA"
+            >
+                <a-video
+                    src="#vid"
+                    scale="1 1 1"
+                    position="0 0.1 0"
+                    rotation="-90 0 0"
+                    class="clickable"
+                    gesture-handler
+                ></a-video>
+            </a-marker>
 
-    <!-- YouTube Shorts iframe overlay -->
-    <iframe
-      id="ytframe"
-      src="https://www.youtube.com/embed/81DV4U10llg?autoplay=1&mute=1&playsinline=1"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowfullscreen
-    ></iframe>
-  </body>
+            <a-entity camera></a-entity>
+        </a-scene>
+    </body>
 </html>
